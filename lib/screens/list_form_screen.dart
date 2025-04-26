@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:to_buy/components/style_button.dart';
+import 'package:to_buy/models/buy_list.dart';
+import 'package:to_buy/validators/list_form_validators.dart';
 
 class ListFormScreen extends StatefulWidget {
   const ListFormScreen({super.key});
@@ -11,33 +14,19 @@ class ListFormScreen extends StatefulWidget {
 class _ListFormScreenState extends State<ListFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _listNameController = TextEditingController();
-  final List<TextEditingController> _itemControllers = [];
-
-  void _addItemField() {
-    setState(() {
-      _itemControllers.add(TextEditingController());
-    });
-  }
-
-  void _removeItemField(int index) {
-    setState(() {
-      _itemControllers.removeAt(index);
-    });
-  }
+  final TextEditingController _listDescriptController = TextEditingController();
 
   void _saveList() {
     if (_formKey.currentState!.validate()) {
       final listName = _listNameController.text;
-      final items =
-          _itemControllers.map((controller) => controller.text).toList();
-
-      // Logique pour sauvegarder la liste et les articles
+      final listDescript = _listDescriptController.text;
+      final list = BuyList(name: listName, description: listDescript);
       print('Liste: $listName');
-      print('Articles: $items');
+      print('Articles: $listDescript');
 
       // Réinitialiser le formulaire
       _listNameController.clear();
-      _itemControllers.clear();
+      _listDescriptController.clear();
     }
   }
 
@@ -57,59 +46,33 @@ class _ListFormScreenState extends State<ListFormScreen> {
                   controller: _listNameController,
                   decoration: InputDecoration(
                     labelText: 'Nom de la liste',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer un nom pour la liste';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                Text(
-                  'Articles',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                ..._itemControllers.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final controller = entry.value;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: controller,
-                            decoration: InputDecoration(
-                              labelText: 'Article ${index + 1}',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer un nom pour l\'article';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.remove_circle),
-                          onPressed: () => _removeItemField(index),
-                        ),
-                      ],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue),
                     ),
-                  );
-                }),
+                    prefixIcon: Icon(Icons.list_rounded),
+                  ),
+                  validator: listNameValidator,
+                ),
                 SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: _addItemField,
-                  icon: Icon(Icons.add),
-                  label: Text('Ajouter un article'),
+
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: _listDescriptController,
+                  decoration: InputDecoration(
+                    labelText: 'Description des articles',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(
+                        color: const Color.fromARGB(255, 243, 215, 33),
+                      ),
+                    ),
+                    prefixIcon: Icon(Icons.description_outlined),
+                  ),
                 ),
                 SizedBox(height: 32),
                 Center(
-                  child: ElevatedButton(
+                  child: StyleButton(
                     onPressed: _saveList,
                     child: Text('Enregistrer la liste'),
                   ),

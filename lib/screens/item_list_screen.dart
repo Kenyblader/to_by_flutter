@@ -78,3 +78,29 @@ class _ItemListScreenState extends State<ItemListScreen> {
     );
   }
 }
+
+// showDialog(
+//           context: context,
+//           builder:
+//               (context) => AlertDialog(
+//                 title: const Text('Supprimer l\'article'),
+//                 content: const Text(
+//                   'Êtes-vous sûr de vouloir supprimer cet article ?',
+//                 ),
+//                 actions: [
+//                   TextButton(
+//                     onPressed: () {
+//                       // Handle deletion logic here
+//                       Navigator.pop(context);
+//                     },
+//                     child: const Text('Oui'),
+//                   ),
+//                   TextButton(
+//                     onPressed: () {
+//                       Navigator.pop(context);
+//                     },
+//                     child: const Text('Non'),
+//                   ),
+//                 ],
+//               ),
+//         );

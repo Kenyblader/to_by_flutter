@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:to_buy/components/nav_card.dart';
 import 'package:to_buy/models/buy_list.dart';
+import 'package:to_buy/provider/theme_provider.dart';
 import 'package:to_buy/screens/item_form_screen.dart';
+import 'package:to_buy/screens/item_list_all_screen.dart';
 import 'package:to_buy/screens/item_list_screen.dart';
 import 'package:to_buy/screens/list_form_screen.dart';
+import 'package:to_buy/screens/list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<Themeprovider>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         title: const Text('ListiFy'),
@@ -22,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
         titleSpacing: 10,
         titleTextStyle: TextStyle(color: Colors.white, fontSize: 25),
         iconTheme: const IconThemeData(color: Colors.white, size: 30),
-        leading: const Icon(Icons.list),
         actions: [
           IconButton(
             onPressed: () {},
@@ -41,6 +45,51 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         backgroundColor: Colors.blueAccent,
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blueAccent),
+              child: Text(
+                'ListiFy',
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Paramètres'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.account_circle),
+              title: const Text('Mon Compte'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading:
+                  themeProvider.isDark
+                      ? const Icon(Icons.light_mode)
+                      : const Icon(Icons.dark_mode),
+              title: Text(themeProvider.isDark ? 'Mode Sombre' : 'Mode Clair'),
+              onTap: () {
+                themeProvider.toggleTheme();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('À propos'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.contact_support),
+              title: const Text('Aide'),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,12 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
             NavCard(
               title: "Mes Listes",
               icon: Icons.article_rounded,
-              destination: ItemListScreen(
-                list: BuyList(
-                  name: "Achat lunch dimanche",
-                  description: "description",
-                ),
-              ),
+              destination: ListScreen(),
             ),
             NavCard(
               title: "Nouvel Article",
@@ -68,12 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
             NavCard(
               title: "Mes Articles",
               icon: Icons.add_shopping_cart_sharp,
-              destination: ItemListScreen(
-                list: BuyList(
-                  name: "Achat lunch dimanche",
-                  description: "description",
-                ),
-              ),
+              destination: const ItemListAllScreen(),
             ),
           ],
         ),
