@@ -1,35 +1,57 @@
+import 'package:to_buy/models/buy_item.dart';
+
 class BuyList {
-  final int? _id;
+  final String? id;
   String name;
   String description;
   DateTime? expirationDate;
+  List<BuyItem> items;
 
-  BuyList(
-    this._id, {
+  BuyList({
+    this.id,
     required this.name,
     required this.description,
     this.expirationDate,
+    this.items = const [],
   });
 
-  int get id => _id as int;
+  double get total => items.fold(0.0, (sum, item) => sum + item.getTotal());
 
   factory BuyList.fromJson(Map<String, dynamic> json) {
     return BuyList(
-      json['id'] as int?,
+      id: json['id'] as String?,
       name: json['name'] as String,
       description: json['description'] as String,
-      expirationDate:
-          json['expirationDate'] != null
-              ? DateTime.parse(json['expirationDate'])
-              : null,
+      expirationDate: json['expirationDate'] != null
+          ? DateTime.parse(json['expirationDate'] as String)
+          : null,
+      items: json['items'] != null
+          ? (json['items'] as List)
+              .map((item) => BuyItem(
+                    name: item['name'] as String,
+                    price: (item['price'] as num).toDouble(),
+                    quantity: (item['quantity'] as num).toDouble(),
+                    date: DateTime.parse(item['date'] as String),
+                  ))
+              .toList()
+          : [],
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
-      'id': _id,
-      'expirationDate': expirationDate?.toIso8601String(),
-      'description': description,
+      'id': id,
       'name': name,
+      'description': description,
+      'expirationDate': expirationDate?.toIso8601String(),
+      'items': items
+          .map((item) => {
+                'name': item.name,
+                'price': item.price,
+                'quantity': item.quantity,
+                'date': item.date.toIso8601String(),
+              })
+          .toList(),
     };
   }
 }
