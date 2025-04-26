@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_buy/components/login_form.dart';
 import 'package:to_buy/components/register_form.dart';
-import 'package:to_buy/screens/item_list_screen.dart';
+import 'package:to_buy/screens/home_screen.dart';
 
 class LoginRegisterScreen extends StatefulWidget {
   const LoginRegisterScreen({super.key});
@@ -26,7 +26,7 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> {
     if (isLogin) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => ItemListScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
         (route) => false,
       );
 

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_buy/components/item_list.dart';
 import 'package:to_buy/models/buy_item.dart';
+import 'package:to_buy/models/buy_list.dart';
 import 'package:to_buy/provider/theme_provider.dart';
 import 'package:to_buy/screens/item_form_screen.dart';
 
 class ItemListScreen extends StatefulWidget {
-  const ItemListScreen({super.key});
+  const ItemListScreen({super.key, required this.list});
+  final BuyList? list;
   @override
   State<ItemListScreen> createState() => _ItemListScreenState();
 }
@@ -31,7 +33,7 @@ class _ItemListScreenState extends State<ItemListScreen> {
         backgroundColor:
             themeProvider.themeData.appBarTheme.backgroundColor ??
             Colors.blueAccent,
-        title: const Text('Liste des articles'),
+        title: Text(widget.list?.name ?? 'Liste d\'achats'),
         actions: [
           IconButton(
             onPressed: () {

@@ -1,21 +1,25 @@
+import 'package:to_buy/models/buy_item.dart';
+
 class BuyList {
-  final int? _id;
+  final int? id;
   String name;
   String description;
+  List<BuyItem> items = [];
   DateTime? expirationDate;
 
-  BuyList(
-    this._id, {
+  BuyList({
+    this.id,
     required this.name,
     required this.description,
     this.expirationDate,
-  });
-
-  int get id => _id as int;
+    List<BuyItem>? items,
+  }) {
+    this.items = items ?? [];
+  }
 
   factory BuyList.fromJson(Map<String, dynamic> json) {
     return BuyList(
-      json['id'] as int?,
+      id: json['id'] as int?,
       name: json['name'] as String,
       description: json['description'] as String,
       expirationDate:
@@ -26,7 +30,7 @@ class BuyList {
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': _id,
+      'id': id,
       'expirationDate': expirationDate?.toIso8601String(),
       'description': description,
       'name': name,
