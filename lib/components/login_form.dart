@@ -5,14 +5,16 @@ import 'package:to_buy/validators/login_form_validators.dart';
 class LoginForm extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final void Function(String, String, GlobalKey<FormState>) onSubmit;
+  final void Function() goToRegister;
+  final String? errorMessage;
 
-  String email = "";
-  String password = "";
-  void Function(String, String, GlobalKey<FormState>) onSubmit;
-  void Function() goToRegister = () {};
-  final String? errorMessage = null;
-
-  LoginForm({super.key, required this.onSubmit, required this.goToRegister});
+  LoginForm({
+    super.key,
+    required this.onSubmit,
+    required this.goToRegister,
+    this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class LoginForm extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 15),
             child: TextFormField(
               controller: emailController,
               decoration: const InputDecoration(
@@ -36,7 +38,7 @@ class LoginForm extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 15),
             child: TextFormField(
               controller: passwordController,
               decoration: const InputDecoration(
@@ -50,47 +52,57 @@ class LoginForm extends StatelessWidget {
               validator: passwordValidator,
             ),
           ),
-
           if (errorMessage != null)
-            Text(errorMessage!, style: const TextStyle(color: Colors.red)),
-
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                StyleButton(
-                  onPressed:
-                      () => onSubmit(
-                        emailController.text,
-                        passwordController.text,
-                        formKey,
-                      ),
-                  child: const Text('Login'),
+                Expanded(
+                  child: StyleButton(
+                    onPressed: () => onSubmit(
+                      emailController.text,
+                      passwordController.text,
+                      formKey,
+                    ),
+                    child: const Text('Connexion'),
+                  ),
                 ),
-                TextButton(
-                  onPressed: goToRegister,
-                  child: const Text("Pas encore de compte ? Inscrivez-vous"),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextButton(
+                    onPressed: goToRegister,
+                    child: const Text("Pas encore de compte ? Inscrivez-vous"),
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 50),
             child: StyleButton(
-              onPressed: () {},
+              onPressed: () {
+                // TODO: Implémenter Google Sign-In
+              },
               backgroundColor: Colors.teal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   Icon(
                     Icons.g_mobiledata_outlined,
                     color: Colors.red,
                     size: 40,
                   ),
-                  const SizedBox(width: 10),
-                  const Text("Se connecter avec Google"),
+                  SizedBox(width: 10),
+                  Text("Se connecter avec Google"),
                 ],
               ),
             ),

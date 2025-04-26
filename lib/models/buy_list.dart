@@ -3,34 +3,61 @@ import 'package:to_buy/models/buy_item.dart';
 class BuyList {
   final int? id;
   String name;
-  String? description;
-  List<BuyItem> items = [];
-  DateTime date;
+  String description;
+  DateTime date = DateTime.now();
+  DateTime? expirationDate;
+  List<BuyItem> items;
 
   BuyList({
     this.id,
     required this.name,
-    this.description,
-    DateTime? date,
-    List<BuyItem>? items,
-  }) : date = date ?? DateTime.now() {
-    this.items = items ?? [];
-  }
-
+    required this.description,
+    this.expirationDate,
+    this.items = const [],
+  });
+  double get total => items.fold(0.0, (sum, item) => sum + item.getTotal());
   factory BuyList.fromJson(Map<String, dynamic> json) {
     return BuyList(
-      id: json['id'] as int?,
+      id: int.parse(json['id'] as String),
       name: json['name'] as String,
       description: json['description'] as String,
-      date: json['date'] != null ? DateTime.parse(json['date']) : null,
+      expirationDate:
+          json['expirationDate'] != null
+              ? DateTime.parse(json['expirationDate'] as String)
+              : null,
+      items:
+          json['items'] != null
+              ? (json['items'] as List)
+                  .map(
+                    (item) => BuyItem(
+                      name: item['name'] as String,
+                      price: (item['price'] as num).toDouble(),
+                      quantity: (item['quantity'] as num).toDouble(),
+                      date: DateTime.parse(item['date'] as String),
+                    ),
+                  )
+                  .toList()
+              : [],
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'date': date?.toIso8601String(),
-      'description': description,
       'name': name,
+      'description': description,
+      'expirationDate': expirationDate?.toIso8601String(),
+      'items':
+          items
+              .map(
+                (item) => {
+                  'name': item.name,
+                  'price': item.price,
+                  'quantity': item.quantity,
+                  'date': item.date.toIso8601String(),
+                },
+              )
+              .toList(),
     };
   }
 }

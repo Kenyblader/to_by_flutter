@@ -1,65 +1,135 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:to_buy/models/buy_list.dart';
 import 'package:provider/provider.dart';
 import 'package:to_buy/components/item_list.dart';
 import 'package:to_buy/models/buy_item.dart';
 import 'package:to_buy/models/buy_list.dart';
 import 'package:to_buy/provider/theme_provider.dart';
 import 'package:to_buy/screens/item_form_screen.dart';
+import 'package:to_buy/screens/list_detail_screen.dart';
+import 'package:to_buy/screens/restore_list_screen.dart';
+import 'package:to_buy/services/firestore_service.dart';
+import 'package:provider/provider.dart' as provider;
+import 'package:to_buy/provider/theme_provider.dart';
 
-class ItemListScreen extends StatefulWidget {
+class ItemListScreen extends ConsumerWidget {
   const ItemListScreen({super.key, required this.list});
   final BuyList? list;
-  @override
-  State<ItemListScreen> createState() => _ItemListScreenState();
-}
-
-class _ItemListScreenState extends State<ItemListScreen> {
-  List<BuyItem> items = [
-    BuyItem(name: 'Article 1', price: 10.0, quantity: 1, date: DateTime.now()),
-    BuyItem(name: 'Article 2', price: 20.0, quantity: 2, date: DateTime.now()),
-    BuyItem(name: 'Article 3', price: 30.0, quantity: 3, date: DateTime.now()),
-    BuyItem(name: 'Article 4', price: 40.0, quantity: 4, date: DateTime.now()),
-    BuyItem(name: 'Article 5', price: 50.0, quantity: 5, date: DateTime.now()),
-    BuyItem(name: 'Article 1', price: 10.0, quantity: 1, date: DateTime.now()),
-    BuyItem(name: 'Article 2', price: 20.0, quantity: 2, date: DateTime.now()),
-    BuyItem(name: 'Article 3', price: 30.0, quantity: 3, date: DateTime.now()),
-  ];
 
   @override
-  Widget build(BuildContext context) {
-    final themeProvider = Provider.of<Themeprovider>(context, listen: false);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeProvider = provider.Provider.of<Themeprovider>(
+      context,
+      listen: false,
+    );
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Mes listes de courses'),
+        centerTitle: true,
         backgroundColor:
             themeProvider.themeData.appBarTheme.backgroundColor ??
             Colors.blueAccent,
-        title: Text(widget.list?.name ?? 'Liste d\'achats'),
         actions: [
           IconButton(
             onPressed: () {
-              themeProvider.toggleTheme();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RestoreListScreen(),
+                ),
+              );
             },
-            icon: Icon(
-              themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.restore, color: Colors.white),
           ),
           IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.border_left_rounded),
-            color: Colors.white,
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.more_vert),
-            color: Colors.white,
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            icon: const Icon(Icons.logout, color: Colors.white),
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return ItemList(item: items[index]);
+      body: StreamBuilder<List<BuyList>>(
+        stream: FirestoreService().getBuyLists(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(child: Text('Erreur de chargement des listes'));
+          }
+          final lists = snapshot.data ?? [];
+          if (lists.isEmpty) {
+            return const Center(child: Text('Aucune liste disponible'));
+          }
+          return ListView.builder(
+            itemCount: lists.length,
+            itemBuilder: (context, index) {
+              final list = lists[index];
+              return Dismissible(
+                key: Key(list.id!.toString()),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                confirmDismiss: (direction) async {
+                  return await showDialog<bool>(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Confirmer la suppression'),
+                          content: Text(
+                            'Voulez-vous supprimer la liste "${list.name}" ?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Annuler'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Supprimer'),
+                            ),
+                          ],
+                        ),
+                  );
+                },
+                onDismissed: (direction) async {
+                  await FirestoreService().deleteBuyList(list.id!.toString());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Liste "${list.name}" supprimée')),
+                  );
+                },
+                child: ListTile(
+                  title: Text(list.name),
+                  subtitle: Text(list.description),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  ListDetailScreen(listId: list.id!.toString()),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Voir détails'),
+                  ),
+                ),
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -69,38 +139,9 @@ class _ItemListScreenState extends State<ItemListScreen> {
             MaterialPageRoute(builder: (context) => const ItemFormScreen()),
           );
         },
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
-
-// showDialog(
-//           context: context,
-//           builder:
-//               (context) => AlertDialog(
-//                 title: const Text('Supprimer l\'article'),
-//                 content: const Text(
-//                   'Êtes-vous sûr de vouloir supprimer cet article ?',
-//                 ),
-//                 actions: [
-//                   TextButton(
-//                     onPressed: () {
-//                       // Handle deletion logic here
-//                       Navigator.pop(context);
-//                     },
-//                     child: const Text('Oui'),
-//                   ),
-//                   TextButton(
-//                     onPressed: () {
-//                       Navigator.pop(context);
-//                     },
-//                     child: const Text('Non'),
-//                   ),
-//                 ],
-//               ),
-//         );

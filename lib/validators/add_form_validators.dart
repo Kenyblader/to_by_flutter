@@ -1,26 +1,41 @@
 String? validateName(String? value) {
   if (value == null || value.isEmpty) {
-    return "Veuillez entrer un nom.";
+    return 'Le nom est requis';
+  }
+  if (value.length < 2) {
+    return 'Le nom doit contenir au moins 2 caractères';
   }
   return null;
 }
 
 String? validatePrice(String? value) {
   if (value == null || value.isEmpty) {
-    return "Veuillez entrer un prix.";
+    return 'Le prix est requis';
   }
-  if (double.tryParse(value) == null) {
-    return "Veuillez entrer un nombre valide.";
+  final price = double.tryParse(value);
+  if (price == null || price <= 0) {
+    return 'Le prix doit être un nombre positif';
   }
   return null;
 }
 
 String? validateQuantity(String? value) {
   if (value == null || value.isEmpty) {
-    return "Veuillez entrer une quantité.";
+    return 'La quantité est requise';
   }
-  if (int.tryParse(value) == null) {
-    return "Veuillez entrer un nombre entier.";
+  final quantity = double.tryParse(value);
+  if (quantity == null || quantity <= 0) {
+    return 'La quantité doit être un nombre positif';
+  }
+  return null;
+}
+
+String? validateDescription(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'La description est requise';
+  }
+  if (value.length < 5) {
+    return 'La description doit contenir au moins 5 caractères';
   }
   return null;
 }

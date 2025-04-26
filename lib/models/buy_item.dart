@@ -1,13 +1,14 @@
 class BuyItem {
   final int? id;
-  String name;
-  double quantity;
-  double price;
-  DateTime date;
-  bool isBuy = false;
+  final String? firestoreId; // ID réel du document Firestore
+  final String name;
+  final double price;
+  final double quantity;
+  final DateTime date;
 
   BuyItem({
     this.id,
+    this.firestoreId,
     required this.name,
     required this.price,
     required this.quantity,
