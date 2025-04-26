@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_buy/models/buy_item.dart';
+import 'package:to_buy/screens/item_form_screen.dart';
 
 class ItemList extends StatelessWidget {
   final BuyItem item;
@@ -8,11 +9,34 @@ class ItemList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(item.name),
-      subtitle: Text('Prix: ${item.price} €'),
-      trailing: Text('Quantité: ${item.quantity}'),
-      onTap: () {},
+    return Container(
+      color: item.isBuy ? Colors.blue : null,
+      child: ListTile(
+        title: Text(item.name),
+        subtitle: Row(
+          children: [
+            Text('Prix: ${item.price}'),
+            const SizedBox(width: 10),
+            Text('Quantite: ${item.quantity}'),
+            SizedBox(width: 10),
+            Text('Date: ${item.date?.toLocal().toString().split(' ')[0]}'),
+          ],
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () {
+            // Navigate to the item form screen with the item details
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ItemFormScreen(item: item),
+              ),
+            );
+          },
+        ),
+
+        onLongPress: () {},
+      ),
     );
   }
 }

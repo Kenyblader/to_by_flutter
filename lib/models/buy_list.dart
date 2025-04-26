@@ -3,17 +3,17 @@ import 'package:to_buy/models/buy_item.dart';
 class BuyList {
   final int? id;
   String name;
-  String description;
+  String? description;
   List<BuyItem> items = [];
-  DateTime? expirationDate;
+  DateTime date;
 
   BuyList({
     this.id,
     required this.name,
-    required this.description,
-    this.expirationDate,
+    this.description,
+    DateTime? date,
     List<BuyItem>? items,
-  }) {
+  }) : date = date ?? DateTime.now() {
     this.items = items ?? [];
   }
 
@@ -22,16 +22,13 @@ class BuyList {
       id: json['id'] as int?,
       name: json['name'] as String,
       description: json['description'] as String,
-      expirationDate:
-          json['expirationDate'] != null
-              ? DateTime.parse(json['expirationDate'])
-              : null,
+      date: json['date'] != null ? DateTime.parse(json['date']) : null,
     );
   }
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'expirationDate': expirationDate?.toIso8601String(),
+      'date': date?.toIso8601String(),
       'description': description,
       'name': name,
     };

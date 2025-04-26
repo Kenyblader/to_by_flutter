@@ -12,6 +12,7 @@ class BuyItem {
     required this.price,
     required this.quantity,
     required this.date,
+    this.isBuy = false,
   });
 
   double getTotal() => price * quantity;
