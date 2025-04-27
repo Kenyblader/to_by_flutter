@@ -15,6 +15,7 @@ class BuyList {
     this.expirationDate,
     this.items = const [],
   });
+
   double get total => items.fold(0.0, (sum, item) => sum + item.getTotal());
   factory BuyList.fromJson(Map<String, dynamic> json) {
     return BuyList(
@@ -55,9 +56,21 @@ class BuyList {
                   'price': item.price,
                   'quantity': item.quantity,
                   'date': item.date.toIso8601String(),
+                  'isBuy': item.isBuy,
                 },
               )
               .toList(),
     };
+  }
+
+  bool get isComplete {
+    print("isComplete: ${items.length}");
+    items.forEach((item) {
+      print(item.isBuy);
+    });
+    for (var item in items) {
+      if (!item.isBuy) return false;
+    }
+    return true;
   }
 }

@@ -13,9 +13,9 @@ class BuyItem {
     required this.name,
     required this.price,
     required this.quantity,
-    required this.date,
+    DateTime? date,
     this.isBuy = false,
-  });
+  }) : date = date ?? DateTime.now();
 
   double getTotal() => price * quantity;
 }

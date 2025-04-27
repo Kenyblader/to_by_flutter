@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_buy/components/nav_card.dart';
+import 'package:to_buy/provider/auth_provider.dart';
 import 'package:to_buy/provider/theme_provider.dart';
 import 'package:to_buy/screens/item_form_screen.dart';
 import 'package:to_buy/screens/item_list_all_screen.dart';
-import 'package:to_buy/screens/list_form_screen.dart';
 import 'package:to_buy/screens/list_screen.dart';
+import 'package:to_buy/screens/login_register_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,7 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
         iconTheme: const IconThemeData(color: Colors.white, size: 30),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              _showLogoutDialog();
+            },
             icon: Container(
               decoration: BoxDecoration(
                 color: Colors.red,
@@ -115,6 +118,41 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Déconnexion'),
+          content: const Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                final authService = AuthService();
+                authService.signOut().then((onValue) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginRegisterScreen(),
+                    ),
+                    (predicate) => false,
+                  );
+                });
+              },
+              child: const Text('Déconnexion'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

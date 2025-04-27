@@ -36,7 +36,8 @@ class FirestoreService {
         'price': item.price,
         'quantity': item.quantity,
         'date': Timestamp.fromDate(item.date),
-      });
+        'isBuy': item.isBuy,
+      }, SetOptions(merge: false)); // Forcer l'écriture
     }
     await batch.commit();
     print('Liste ajoutée avec succès: ${listRef.id}');
@@ -68,7 +69,22 @@ class FirestoreService {
                   data['expirationDate'] != null
                       ? (data['expirationDate'] as Timestamp).toDate()
                       : null,
-              items: const [],
+              items:
+                  doc.data()['items'] != null
+                      ? (data['items'] as List)
+                          .map(
+                            (item) => BuyItem(
+                              id: null,
+                              firestoreId: item['id'] as String?,
+                              name: item['name'] as String,
+                              price: (item['price'] as num).toDouble(),
+                              quantity: (item['quantity'] as num).toDouble(),
+                              date: DateTime.parse(item['date'] as String),
+                              isBuy: item['isBuy'] as bool? ?? false,
+                            ),
+                          )
+                          .toList()
+                      : [],
             );
           }).toList();
         });
@@ -102,6 +118,7 @@ class FirestoreService {
               price: (data['price'] as num).toDouble(),
               quantity: (data['quantity'] as num).toDouble(),
               date: (data['date'] as Timestamp).toDate(),
+              isBuy: data['isBuy'] as bool? ?? false,
             );
           }).toList();
         });
@@ -132,6 +149,7 @@ class FirestoreService {
         'price': item.price,
         'quantity': item.quantity,
         'date': Timestamp.fromDate(item.date),
+        'isBuy': item.isBuy,
       }, SetOptions(merge: false)); // Forcer l'écriture
       print('Article ajouté avec succès, ID: ${itemRef.id}');
     } catch (e) {
@@ -164,12 +182,33 @@ class FirestoreService {
         'price': item.price,
         'quantity': item.quantity,
         'date': Timestamp.fromDate(item.date),
+        'isBuy': item.isBuy,
       });
       print('Article mis à jour avec succès: $itemId');
     } catch (e) {
       print('Erreur lors de la mise à jour de l\'article $itemId: $e');
       throw Exception('Erreur lors de la mise à jour de l\'article: $e');
     }
+  }
+
+  Future<void> toggleItemStatus(
+    String listId,
+    String itemId,
+    bool isBuy,
+  ) async {
+    if (userId == null) {
+      throw Exception('Utilisateur non connecté');
+    }
+
+    final itemRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('lists')
+        .doc(listId)
+        .collection('items')
+        .doc(itemId);
+
+    await itemRef.update({'isBuy': isBuy});
   }
 
   // Supprimer un article d'une liste

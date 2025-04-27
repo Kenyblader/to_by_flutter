@@ -26,11 +26,12 @@ class _LoginRegisterScreenState extends ConsumerState<LoginRegisterScreen> {
     });
   }
 
-  void onSubmit(
+  Future<void> onSubmit(
     String email,
     String password,
     GlobalKey<FormState> formKey,
   ) async {
+    print("email: $email, password: $password");
     if (formKey.currentState!.validate()) {
       setState(() {
         isSubmitting = true; // Indiquer que la soumission est en cours
@@ -39,7 +40,35 @@ class _LoginRegisterScreenState extends ConsumerState<LoginRegisterScreen> {
       final authService = ref.read(authProvider);
       String? error;
       if (isLogin) {
-        error = await authService.signInWithEmail(email, password);
+        await authService.signInWithEmail(email, password).then((errore) {
+          print('error: $error');
+          if (error == 'invalid-credential') {
+            error = 'Identifiants invalides.';
+          } else if (errore == 'user-not-found') {
+            error = 'Aucun utilisateur trouvé avec cet email.';
+          } else if (errore == 'wrong-password') {
+            error = 'Mot de passe incorrect.';
+          } else if (errore == 'invalid-email') {
+            error = 'Email invalide.';
+          } else if (errore == 'user-disabled') {
+            error = 'Utilisateur désactivé.';
+          } else if (errore == 'operation-not-allowed') {
+            error = 'L\'opération n\'est pas autorisée.';
+          } else if (errore == 'too-many-requests') {
+            error = 'Trop de demandes. Veuillez réessayer plus tard.';
+          } else if (errore == 'network-request-failed') {
+            error = 'Échec de la demande réseau. Vérifiez votre connexion.';
+          } else if (errore == 'email-already-in-use') {
+            error = 'Cet email est déjà utilisé.';
+          } else if (errore == 'weak-password') {
+            error = 'Le mot de passe est trop faible.';
+          } else if (errore == null) {
+            // Connexion réussie
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Connexion réussie !')),
+            );
+          }
+        });
       } else {
         error = await authService.signUpWithEmail(email, password);
         if (error == null) {
@@ -49,9 +78,7 @@ class _LoginRegisterScreenState extends ConsumerState<LoginRegisterScreen> {
             // Passer à l'écran de connexion après inscription
             toggleForm();
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Inscription réussie ! Veuillez vous connecter.'),
-              ),
+              const SnackBar(content: Text('Inscription réussie !')),
             );
           }
         }
@@ -60,7 +87,7 @@ class _LoginRegisterScreenState extends ConsumerState<LoginRegisterScreen> {
         isSubmitting = false; // Terminer la soumission
         errorMessage = error;
       });
-      if (error == null && isLogin) {
+      if (error == null) {
         // Redirection après connexion réussie
         Navigator.pushAndRemoveUntil(
           context,
@@ -70,7 +97,7 @@ class _LoginRegisterScreenState extends ConsumerState<LoginRegisterScreen> {
       } else if (error != null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(error)));
+        ).showSnackBar(SnackBar(content: Text(error as String)));
       }
     }
   }

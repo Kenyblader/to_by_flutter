@@ -17,8 +17,19 @@ class AuthService {
   // Connexion avec email et mot de passe
   Future<String?> signInWithEmail(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return null; // Pas d'erreur
+      var s = await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((user) {
+            if (user.user == null) {
+              return 'invalid-credential'; // Identifiants invalides
+            } else if (user.user!.emailVerified == false) {
+              return 'email-not-verified'; // Email non vérifié
+            } else if (user.user!.emailVerified == true) {
+              return null;
+            }
+          });
+      return s;
+      // Pas d'erreur
     } on FirebaseAuthException catch (e) {
       return _handleAuthError(e);
     }
@@ -27,7 +38,10 @@ class AuthService {
   // Inscription avec email et mot de passe
   Future<String?> signUpWithEmail(String email, String password) async {
     try {
-      await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       // Déconnexion automatique après inscription
       await _auth.signOut();
       return null; // Pas d'erreur

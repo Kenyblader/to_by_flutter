@@ -460,7 +460,41 @@ class ListDetailScreen extends StatelessWidget {
                     return ListTile(
                       title: Text(item.name),
                       subtitle: Text(
-                        'Prix: ${item.price.toStringAsFixed(2)} € | Qté: ${item.quantity.toStringAsFixed(0)}',
+                        'Prix: ${item.price.toStringAsFixed(2)} Fcfa | Qté: ${item.quantity.toStringAsFixed(0)}',
+                      ),
+                      leading: Checkbox(
+                        value: item.isBuy,
+                        onChanged: (value) async {
+                          if (item.firestoreId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Erreur: ID de l\'article invalide',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          try {
+                            await FirestoreService().toggleItemStatus(
+                              listId,
+                              item.firestoreId!,
+                              value!,
+                            );
+                            // Update the local state of the item
+                            (context as Element)
+                                .markNeedsBuild(); // Trigger a rebuild to reflect changes
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Erreur lors de la mise à jour: $e',
+                                ),
+                              ),
+                            );
+                          }
+                        },
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
