@@ -4,15 +4,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as riverpod;
 import 'package:provider/provider.dart' as provider;
 import 'package:to_buy/provider/theme_provider.dart';
+import 'package:to_buy/screens/home_screen.dart';
 import 'package:to_buy/screens/item_list_screen.dart';
 import 'package:to_buy/screens/login_register_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // Forcer la déconnexion au lancement pour afficher LoginForm
   await FirebaseAuth.instance.signOut();
   runApp(
@@ -44,8 +43,10 @@ class MyApp extends StatelessWidget {
             );
           }
           // Vérifier si l'utilisateur est réellement connecté
-          if (snapshot.hasData && snapshot.data != null && FirebaseAuth.instance.currentUser != null) {
-            return const ItemListScreen();
+          if (snapshot.hasData &&
+              snapshot.data != null &&
+              FirebaseAuth.instance.currentUser != null) {
+            return const HomeScreen();
           }
           return const LoginRegisterScreen();
         },

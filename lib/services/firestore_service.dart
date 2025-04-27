@@ -22,11 +22,8 @@ class FirestoreService {
     }
 
     print('Ajout d\'une nouvelle liste: ${buyList.name}');
-    final listRef = _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('lists')
-        .doc();
+    final listRef =
+        _firestore.collection('users').doc(userId).collection('lists').doc();
 
     final listData = buyList.toJson()..['createdAt'] = Timestamp.now();
     await listRef.set(listData);
@@ -58,20 +55,23 @@ class FirestoreService {
         .collection('lists')
         .snapshots()
         .map((snapshot) {
-      print('Récupération des listes pour userId: $userId, ${snapshot.docs.length} listes trouvées');
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return BuyList(
-          id: doc.id,
-          name: data['name'] as String,
-          description: data['description'] as String,
-          expirationDate: data['expirationDate'] != null
-              ? (data['expirationDate'] as Timestamp).toDate()
-              : null,
-          items: const [],
-        );
-      }).toList();
-    });
+          print(
+            'Récupération des listes pour userId: $userId, ${snapshot.docs.length} listes trouvées',
+          );
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return BuyList(
+              id: doc.id, // Safely parse doc.id to an integer
+              name: data['name'] as String,
+              description: data['description'] as String,
+              expirationDate:
+                  data['expirationDate'] != null
+                      ? (data['expirationDate'] as Timestamp).toDate()
+                      : null,
+              items: const [],
+            );
+          }).toList();
+        });
   }
 
   // Récupérer les articles d'une liste spécifique
@@ -90,19 +90,21 @@ class FirestoreService {
         .collection('items')
         .snapshots()
         .map((snapshot) {
-      print('Nombre d\'articles trouvés pour listId $listId: ${snapshot.docs.length}');
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return BuyItem(
-          id: null,
-          firestoreId: doc.id,
-          name: data['name'] as String,
-          price: (data['price'] as num).toDouble(),
-          quantity: (data['quantity'] as num).toDouble(),
-          date: (data['date'] as Timestamp).toDate(),
-        );
-      }).toList();
-    });
+          print(
+            'Nombre d\'articles trouvés pour listId $listId: ${snapshot.docs.length}',
+          );
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return BuyItem(
+              id: null,
+              firestoreId: doc.id,
+              name: data['name'] as String,
+              price: (data['price'] as num).toDouble(),
+              quantity: (data['quantity'] as num).toDouble(),
+              date: (data['date'] as Timestamp).toDate(),
+            );
+          }).toList();
+        });
   }
 
   // Ajouter un article à une liste existante
@@ -112,16 +114,19 @@ class FirestoreService {
       throw Exception('Utilisateur non connecté');
     }
 
-    final itemRef = _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('lists')
-        .doc(listId)
-        .collection('items')
-        .doc();
+    final itemRef =
+        _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('lists')
+            .doc(listId)
+            .collection('items')
+            .doc();
 
     try {
-      print('Ajout de l\'article "${item.name}" à la liste $listId, chemin: ${itemRef.path}');
+      print(
+        'Ajout de l\'article "${item.name}" à la liste $listId, chemin: ${itemRef.path}',
+      );
       await itemRef.set({
         'name': item.name,
         'price': item.price,
@@ -151,7 +156,9 @@ class FirestoreService {
         .doc(itemId);
 
     try {
-      print('Mise à jour de l\'article $itemId dans la liste $listId, chemin: ${itemRef.path}');
+      print(
+        'Mise à jour de l\'article $itemId dans la liste $listId, chemin: ${itemRef.path}',
+      );
       await itemRef.update({
         'name': item.name,
         'price': item.price,
@@ -181,7 +188,9 @@ class FirestoreService {
         .doc(itemId);
 
     try {
-      print('Suppression de l\'article $itemId dans la liste $listId, chemin: ${itemRef.path}');
+      print(
+        'Suppression de l\'article $itemId dans la liste $listId, chemin: ${itemRef.path}',
+      );
       await itemRef.delete();
       print('Article supprimé avec succès: $itemId');
     } catch (e) {
@@ -198,25 +207,27 @@ class FirestoreService {
     }
 
     print('Suppression de la liste $listId');
-    final listDoc = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('lists')
-        .doc(listId)
-        .get();
+    final listDoc =
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('lists')
+            .doc(listId)
+            .get();
 
     if (!listDoc.exists) {
       print('Erreur: Liste $listId introuvable');
       throw Exception('Liste introuvable');
     }
 
-    final itemsSnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('lists')
-        .doc(listId)
-        .collection('items')
-        .get();
+    final itemsSnapshot =
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('lists')
+            .doc(listId)
+            .collection('items')
+            .get();
 
     final deletedListRef = _firestore
         .collection('users')
@@ -257,20 +268,23 @@ class FirestoreService {
         .collection('deleted_lists')
         .snapshots()
         .map((snapshot) {
-      print('Récupération des listes supprimées pour userId: $userId, ${snapshot.docs.length} listes trouvées');
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return BuyList(
-          id: doc.id,
-          name: data['name'] as String,
-          description: data['description'] as String,
-          expirationDate: data['expirationDate'] != null
-              ? (data['expirationDate'] as Timestamp).toDate()
-              : null,
-          items: const [],
-        );
-      }).toList();
-    });
+          print(
+            'Récupération des listes supprimées pour userId: $userId, ${snapshot.docs.length} listes trouvées',
+          );
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            return BuyList(
+              id: doc.id,
+              name: data['name'] as String,
+              description: data['description'] as String,
+              expirationDate:
+                  data['expirationDate'] != null
+                      ? (data['expirationDate'] as Timestamp).toDate()
+                      : null,
+              items: const [],
+            );
+          }).toList();
+        });
   }
 
   // Restaurer une liste supprimée
@@ -281,29 +295,33 @@ class FirestoreService {
     }
 
     print('Restauration de la liste $listId');
-    final deletedListDoc = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('deleted_lists')
-        .doc(listId)
-        .get();
+    final deletedListDoc =
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('deleted_lists')
+            .doc(listId)
+            .get();
 
     if (!deletedListDoc.exists) {
       print('Erreur: Liste supprimée $listId introuvable');
       throw Exception('Liste supprimée introuvable');
     }
     if (deletedListDoc.data()!['name'] != listName) {
-      print('Erreur: Nom de la liste incorrect, attendu: $listName, trouvé: ${deletedListDoc.data()!['name']}');
+      print(
+        'Erreur: Nom de la liste incorrect, attendu: $listName, trouvé: ${deletedListDoc.data()!['name']}',
+      );
       throw Exception('Nom de la liste incorrect');
     }
 
-    final itemsSnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('deleted_lists')
-        .doc(listId)
-        .collection('items')
-        .get();
+    final itemsSnapshot =
+        await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('deleted_lists')
+            .doc(listId)
+            .collection('items')
+            .get();
 
     final listRef = _firestore
         .collection('users')

@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:to_buy/provider/theme_provider.dart';
 
 class ItemFormScreen extends StatefulWidget {
-  const ItemFormScreen({super.key});
+  final BuyItem? item;
+  const ItemFormScreen({super.key, this.item});
 
   @override
   State<ItemFormScreen> createState() => _ItemFormState();
@@ -51,14 +52,17 @@ class _ItemFormState extends State<ItemFormScreen> {
 
   void _validateAndSave() async {
     if (_formKey.currentState!.validate()) {
-      final items = _items
-          .map((item) => BuyItem(
-                name: item['name']!.text,
-                price: double.parse(item['price']!.text),
-                quantity: double.parse(item['quantity']!.text),
-                date: DateTime.now(),
-              ))
-          .toList();
+      final items =
+          _items
+              .map(
+                (item) => BuyItem(
+                  name: item['name']!.text,
+                  price: double.parse(item['price']!.text),
+                  quantity: double.parse(item['quantity']!.text),
+                  date: DateTime.now(),
+                ),
+              )
+              .toList();
 
       final buyList = BuyList(
         id: null,
@@ -69,14 +73,14 @@ class _ItemFormState extends State<ItemFormScreen> {
 
       try {
         await FirestoreService().addBuyList(buyList, items);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Liste créée !')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Liste créée !')));
         Navigator.pop(context);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur : $e')));
       }
     }
   }
@@ -87,7 +91,9 @@ class _ItemFormState extends State<ItemFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Créer une liste de courses'),
-        backgroundColor: themeProvider.themeData.appBarTheme.backgroundColor ?? Colors.blueAccent,
+        backgroundColor:
+            themeProvider.themeData.appBarTheme.backgroundColor ??
+            Colors.blueAccent,
         centerTitle: true,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
@@ -96,12 +102,9 @@ class _ItemFormState extends State<ItemFormScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              themeProvider.toggleTheme();
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
-            icon: Icon(
-              themeProvider.isDark ? Icons.light_mode : Icons.dark_mode,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.home, color: Colors.white),
           ),
         ],
       ),
@@ -117,7 +120,9 @@ class _ItemFormState extends State<ItemFormScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Nom de la liste',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   validator: validateName,
                 ),
@@ -126,7 +131,9 @@ class _ItemFormState extends State<ItemFormScreen> {
                   controller: _descriptionController,
                   decoration: InputDecoration(
                     labelText: 'Description',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                   validator: validateDescription,
                 ),
@@ -148,7 +155,9 @@ class _ItemFormState extends State<ItemFormScreen> {
                               controller: controllers['name'],
                               decoration: InputDecoration(
                                 labelText: 'Nom',
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                               validator: validateName,
                               onChanged: (_) => _calculateTotal(),
@@ -161,7 +170,9 @@ class _ItemFormState extends State<ItemFormScreen> {
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Prix',
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                               validator: validatePrice,
                               onChanged: (_) => _calculateTotal(),
@@ -174,7 +185,9 @@ class _ItemFormState extends State<ItemFormScreen> {
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Qté',
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
                               validator: validateQuantity,
                               onChanged: (_) => _calculateTotal(),
@@ -196,7 +209,10 @@ class _ItemFormState extends State<ItemFormScreen> {
                 const SizedBox(height: 16),
                 Text(
                   'Total: ${_total.toStringAsFixed(2)} €',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Center(

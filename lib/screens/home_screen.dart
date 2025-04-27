@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:to_buy/components/nav_card.dart';
-import 'package:to_buy/models/buy_list.dart';
 import 'package:to_buy/provider/theme_provider.dart';
 import 'package:to_buy/screens/item_form_screen.dart';
 import 'package:to_buy/screens/item_list_all_screen.dart';
-import 'package:to_buy/screens/item_list_screen.dart';
 import 'package:to_buy/screens/list_form_screen.dart';
 import 'package:to_buy/screens/list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -97,18 +95,18 @@ class _HomeScreenState extends State<HomeScreen> {
             NavCard(
               title: "Nouvelle Liste",
               icon: Icons.newspaper_rounded,
-              destination: const ListFormScreen(),
+              destination: const ItemFormScreen(),
             ),
             NavCard(
               title: "Mes Listes",
               icon: Icons.article_rounded,
-              destination: ListScreen(),
+              destination: const ListScreen(),
             ),
-            NavCard(
-              title: "Nouvel Article",
-              icon: Icons.add_circle_rounded,
-              destination: const ItemFormScreen(),
-            ),
+            // NavCard(
+            //   title: "Nouvel Article",
+            //   icon: Icons.add_circle_rounded,
+            //   destination: const ItemFormScreen(),
+            // ),
             NavCard(
               title: "Mes Articles",
               icon: Icons.add_shopping_cart_sharp,

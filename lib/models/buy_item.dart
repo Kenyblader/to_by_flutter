@@ -5,6 +5,7 @@ class BuyItem {
   final double price;
   final double quantity;
   final DateTime date;
+  bool isBuy;
 
   BuyItem({
     this.id,

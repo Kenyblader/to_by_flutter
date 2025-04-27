@@ -5,7 +5,6 @@ import 'package:to_buy/components/login_form.dart';
 import 'package:to_buy/components/register_form.dart';
 import 'package:to_buy/provider/auth_provider.dart';
 import 'package:to_buy/screens/home_screen.dart';
-import 'package:to_buy/screens/item_list_screen.dart';
 
 class LoginRegisterScreen extends ConsumerStatefulWidget {
   const LoginRegisterScreen({super.key});

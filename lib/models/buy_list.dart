@@ -1,7 +1,7 @@
 import 'package:to_buy/models/buy_item.dart';
 
 class BuyList {
-  final int? id;
+  String? id = DateTime.now().hashCode.toString();
   String name;
   String description;
   DateTime date = DateTime.now();
@@ -18,7 +18,7 @@ class BuyList {
   double get total => items.fold(0.0, (sum, item) => sum + item.getTotal());
   factory BuyList.fromJson(Map<String, dynamic> json) {
     return BuyList(
-      id: int.parse(json['id'] as String),
+      id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
       expirationDate:

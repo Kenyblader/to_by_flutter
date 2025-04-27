@@ -20,11 +20,15 @@ class RestoreListScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return const Center(child: Text('Erreur de chargement des listes supprimées'));
+            return const Center(
+              child: Text('Erreur de chargement des listes supprimées'),
+            );
           }
           final deletedLists = snapshot.data ?? [];
           if (deletedLists.isEmpty) {
-            return const Center(child: Text('Aucune liste supprimée disponible'));
+            return const Center(
+              child: Text('Aucune liste supprimée disponible'),
+            );
           }
           return ListView.builder(
             itemCount: deletedLists.length,
@@ -39,48 +43,58 @@ class RestoreListScreen extends StatelessWidget {
                     final formKey = GlobalKey<FormState>();
                     final confirm = await showDialog<bool>(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Restaurer la liste'),
-                        content: Form(
-                          key: formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Entrez le nom exact de la liste "${list.name}" pour la restaurer.'),
-                              TextFormField(
-                                controller: nameController,
-                                decoration: const InputDecoration(labelText: 'Nom de la liste'),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Veuillez entrer le nom';
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text('Restaurer la liste'),
+                            content: Form(
+                              key: formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Entrez le nom exact de la liste "${list.name}" pour la restaurer.',
+                                  ),
+                                  TextFormField(
+                                    controller: nameController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Nom de la liste',
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Veuillez entrer le nom';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Annuler'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (formKey.currentState!.validate()) {
+                                    Navigator.pop(context, true);
                                   }
-                                  return null;
                                 },
+                                child: const Text('Confirmer'),
                               ),
                             ],
                           ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Annuler'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (formKey.currentState!.validate()) {
-                                Navigator.pop(context, true);
-                              }
-                            },
-                            child: const Text('Confirmer'),
-                          ),
-                        ],
-                      ),
                     );
                     if (confirm == true) {
                       try {
-                        await FirestoreService().restoreBuyList(list.id!, nameController.text);
+                        await FirestoreService().restoreBuyList(
+                          list.id!.toString(),
+                          nameController.text,
+                        );
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Liste "${list.name}" restaurée')),
+                          SnackBar(
+                            content: Text('Liste "${list.name}" restaurée'),
+                          ),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(

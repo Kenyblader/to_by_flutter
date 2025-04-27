@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_buy/models/buy_list.dart';
+import 'package:to_buy/screens/list_detail_screen.dart';
+import 'package:to_buy/services/firestore_service.dart';
 
 class ListScreen extends StatefulWidget {
   const ListScreen({super.key});
@@ -11,16 +13,10 @@ class ListScreen extends StatefulWidget {
 class _ListScreenState extends State<ListScreen> {
   final _searchController = TextEditingController();
   final List<BuyList> _filteredItems = [];
-  List<BuyList> items = [
-    BuyList(name: 'Liste 1', description: "Liste 1"),
-    BuyList(name: 'Liste 2', description: "Liste 2"),
-    BuyList(name: 'Liste 3', description: "Liste 3"),
-    BuyList(name: 'Liste 4', description: "Liste 4"),
-    BuyList(name: 'Liste 5', description: "Liste 5"),
-    BuyList(name: 'Liste 6', description: "Liste 6"),
-    BuyList(name: 'Liste 7', description: "Liste 7"),
-    BuyList(name: 'Liste 8', description: "Liste 8"),
-  ];
+  final List<BuyList> items = [];
+  final fireSoreService = FirestoreService();
+  bool isLoading = true;
+  bool isCharging = false; // Assuming you have a FirebaseService class
   void filterItems(String query) {
     setState(() {
       if (query.isEmpty) {
@@ -38,7 +34,24 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    var list = fireSoreService.getBuyLists();
+    list.listen((event) {
+      setState(() {
+        items.clear();
+        items.addAll(event);
+      });
+    }); // Initialize filtered items with all items
+    isLoading = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    _filteredItems.clear();
     _filteredItems.addAll(items); // Initialize filtered items with all items
     return Scaffold(
       appBar: AppBar(
@@ -53,9 +66,7 @@ class _ListScreenState extends State<ListScreen> {
           children: [
             TextField(
               controller: _searchController,
-              onChanged: (value) {
-                filterItems(value);
-              },
+              onChanged: filterItems,
               decoration: InputDecoration(
                 labelText: 'Rechercher une liste',
                 border: OutlineInputBorder(),
@@ -79,6 +90,16 @@ class _ListScreenState extends State<ListScreen> {
                         });
                       },
                     ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => ListDetailScreen(
+                                  listId: _filteredItems[index].id!,
+                                ),
+                          ),
+                        ),
                   );
                 },
               ),
