@@ -6,15 +6,16 @@
     android:layout_height="match_parent"
     android:theme="@style/Theme.To_buy.AppWidgetContainer"
     tools:ignore="MissingClass">
+
     <ListView
         android:id="@+id/widget_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:dividerHeight="1dp"
         android:divider="@android:color/darker_gray"
-        />
+        android:dividerHeight="1dp" />
+
     <TextView
+        android:id="@+id/names"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/names"/>
+        android:layout_height="wrap_content" />
 </RelativeLayout>
