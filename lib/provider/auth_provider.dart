@@ -26,8 +26,11 @@ class AuthService {
               return 'email-not-verified'; // Email non vérifié
             } else if (user.user!.emailVerified == true) {
               return null;
+            } else {
+              return 'erreur reseaux';
             }
           });
+      print('auth logins: $s');
       return s;
       // Pas d'erreur
     } on FirebaseAuthException catch (e) {

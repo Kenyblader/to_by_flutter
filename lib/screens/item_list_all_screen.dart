@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:to_buy/components/item_list.dart';
 import 'package:to_buy/models/buy_item.dart';
 import 'package:to_buy/provider/theme_provider.dart';
-import 'package:to_buy/screens/item_form_screen.dart';
+import 'package:to_buy/services/firestore_service.dart';
 
 class ItemListAllScreen extends StatefulWidget {
   const ItemListAllScreen({super.key});
@@ -14,46 +14,41 @@ class ItemListAllScreen extends StatefulWidget {
 class _ItemListAllScreenState extends State<ItemListAllScreen> {
   final _searchController = TextEditingController();
   final _filteredItems = <BuyItem>[];
-  List<BuyItem> items = [
-    BuyItem(
-      name: 'Article 1',
-      price: 10.0,
-      quantity: 1,
-      date: DateTime.now(),
-      isBuy: true,
-    ),
-    BuyItem(name: 'Article 2', price: 20.0, quantity: 2, date: DateTime.now()),
-    BuyItem(name: 'Article 3', price: 30.0, quantity: 3, date: DateTime.now()),
-    BuyItem(name: 'Article 4', price: 40.0, quantity: 4, date: DateTime.now()),
-    BuyItem(name: 'Article 5', price: 50.0, quantity: 5, date: DateTime.now()),
-    BuyItem(name: 'Article 6', price: 10.0, quantity: 1, date: DateTime.now()),
-    BuyItem(name: 'Article 7', price: 20.0, quantity: 2, date: DateTime.now()),
-    BuyItem(name: 'Article 8', price: 30.0, quantity: 3, date: DateTime.now()),
-  ];
+  List<BuyItem> items = [];
+  final firestoreService = FirestoreService();
+
+  void filterItems(String query) {
+    setState(() {
+      _filteredItems.clear();
+      if (query.isEmpty) {
+        _filteredItems.addAll(items);
+      } else {
+        _filteredItems.addAll(
+          items.where(
+            (item) => item.name.toLowerCase().contains(query.toLowerCase()),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _filteredItems.addAll(items);
+    _initializeData();
   }
 
-  void filterItems(String query) {
-    print(query);
-    if (query.isEmpty) {
+  void _initializeData() async {
+    firestoreService.getBuyLists().listen((value) {
+      for (var element in value) {
+        items.addAll(element.items);
+      }
       setState(() {
         _filteredItems.clear();
         _filteredItems.addAll(items);
       });
-    } else {
-      setState(() {
-        _filteredItems.clear();
-
-        _filteredItems.addAll(
-          items.where((item) => item.name.toLowerCase().contains(query)),
-        );
-      });
-    }
+    });
   }
 
   @override
@@ -160,10 +155,10 @@ class _ItemListAllScreenState extends State<ItemListAllScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ItemFormScreen()),
-          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => const ItemFormScreen()),
+          // );
         },
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,

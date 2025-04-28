@@ -13,12 +13,18 @@ class ItemList extends StatelessWidget {
       color: item.isBuy ? Colors.blue : null,
       child: ListTile(
         title: Text(item.name),
-        subtitle: Row(
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Prix: ${item.price}'),
-            const SizedBox(width: 10),
-            Text('Quantite: ${item.quantity}'),
-            SizedBox(width: 10),
+            Row(
+              children: [
+                Text('Prix: ${item.price}'),
+                const SizedBox(width: 10),
+                Text('Qte: ${item.quantity}'),
+                SizedBox(width: 10),
+              ],
+            ),
+            const SizedBox(height: 5),
             Text('Date: ${item.date?.toLocal().toString().split(' ')[0]}'),
           ],
         ),

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:to_buy/components/nav_card.dart';
+import 'package:to_buy/models/buy_list.dart';
 import 'package:to_buy/provider/auth_provider.dart';
 import 'package:to_buy/provider/theme_provider.dart';
 import 'package:to_buy/screens/item_form_screen.dart';
 import 'package:to_buy/screens/item_list_all_screen.dart';
 import 'package:to_buy/screens/list_screen.dart';
 import 'package:to_buy/screens/login_register_screen.dart';
+import 'package:to_buy/widgets/listify_widget.dart';
+
+import '../widgets/shared_preferences_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,12 +66,18 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Paramètres'),
-              onTap: () {},
+              onTap: () {
+                ListifyWidgetManager.updateHeadline(BuyList(name: "parmBuyList", description: " description param"));
+                print("HomeScreen Modifier");
+              },
             ),
             ListTile(
               leading: const Icon(Icons.account_circle),
               title: const Text('Mon Compte'),
-              onTap: () {},
+              onTap: () async {
+               var x=await HomeWidget.saveWidgetData("id", "string");
+               print(x);
+              },
             ),
             ListTile(
               leading:

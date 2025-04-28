@@ -392,11 +392,11 @@ class ListDetailScreen extends StatelessWidget {
     );
     await file.writeAsBytes(await pdf.save());
 
-    await Share.shareFiles(
-      [file.path],
-      subject: 'Liste de courses : ${list.name}',
-      text: 'Voici la liste de courses "${list.name}" en PDF.',
-    );
+    // await Share.shareFiles(
+    //   [file.path],
+    //   subject: 'Liste de courses : ${list.name}',
+    //   text: 'Voici la liste de courses "${list.name}" en PDF.',
+    // );
   }
 
   @override

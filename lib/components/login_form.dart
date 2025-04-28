@@ -67,11 +67,12 @@ class LoginForm extends StatelessWidget {
               children: [
                 Expanded(
                   child: StyleButton(
-                    onPressed: () => onSubmit(
-                      emailController.text,
-                      passwordController.text,
-                      formKey,
-                    ),
+                    onPressed:
+                        () => onSubmit(
+                          emailController.text,
+                          passwordController.text,
+                          formKey,
+                        ),
                     child: const Text('Connexion'),
                   ),
                 ),
