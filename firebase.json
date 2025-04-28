@@ -9,7 +9,7 @@
         }
       },
       "dart": {
-        "lib/firebase_options.dart": {
+        "lib/firebase_options.dart": { 
           "projectId": "tobuy-ce2e9",
           "configurations": {
             "android": "1:906449779436:android:afb92cae5f058de04cc3c9",
