@@ -8,6 +8,7 @@ import android.content.Intent
 import android.widget.RemoteViews
 import androidx.recyclerview.widget.RecyclerView
 import es.antonborri.home_widget.HomeWidgetPlugin
+import es.antonborri.home_widget.HomeWidgetProvider
 import org.json.JSONArray
 import java.util.Date
 
@@ -34,7 +35,9 @@ class ListifyWidget : AppWidgetProvider() {
 
             // ATTENTION : setRemoteAdapter nécessite un Intent vers un Service
             val intent = Intent(context, BuyListWidgetService::class.java)
-            views.setRemoteAdapter(R.id.widget_list_view, intent)
+            var names= HomeWidgetPlugin.getData(context).getString("names","aucune Liste Pour l'intant");
+//            views.setRemoteAdapter(R.id.widget_list_view, intent)
+            views.setTextViewText(R.id.names, names)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }

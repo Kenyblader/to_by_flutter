@@ -18,7 +18,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   ListifyWidgetManager.setGroupId();
   ListifyWidgetManager.updateHeadline(BuyList(name: "buylist", description: "description"));
-  SharedPreferencesStorage.setValue("title", "kenyBlader");
   runApp(
     riverpod.ProviderScope(
       child: provider.ChangeNotifierProvider<Themeprovider>(

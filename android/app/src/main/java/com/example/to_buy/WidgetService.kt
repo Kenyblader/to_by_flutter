@@ -3,6 +3,7 @@ package com.example.to_buy
 import android.content.Intent
 import android.widget.RemoteViewsService
 import android.content.Context
+import android.util.Log
 import org.json.JSONArray
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetPlugin
@@ -45,6 +46,7 @@ class BuyListRemoteViewsFactory(private val context: Context) : RemoteViewsServi
     private fun loadBuyLists() {
         val prefs = HomeWidgetPlugin.getData(context);
         val jsonString = prefs.getString("names", "[]")
+        Log.d("ListifyWidget", "Chargement des listes : $jsonString")
         val names = mutableListOf<String>()
         jsonString?.let {
             val jsonArray = JSONArray(it)
